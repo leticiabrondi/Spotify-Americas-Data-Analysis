@@ -114,8 +114,8 @@ spotify-americas-music-analytics/
 ### 1. Clone o repositório
 
 ```bash
-git clone https://github.com/seu-usuario/spotify-americas-music-analytics.git
-cd spotify-americas-music-analytics
+git clone https://github.com/leticiabrondi/Spotify-Americas-Data-Analysis.git
+cd Spotify-Americas-Data-Analysis
 ```
 
 ### 2. Instale as dependências
@@ -126,7 +126,7 @@ pip install -r requirements.txt
 
 ### 3. Baixe o dataset
 
-- Dataset original: [Spotify Weekly Top 200 on Kaggle](https://www.kaggle.com/datasets/spotify-weekly-top-200)
+- Dataset original: [Spotify Weekly Top 200 Songs Streaming Data on Kaggle](https://www.kaggle.com/datasets/yelexa/spotify200/data)
 - Coloque o arquivo `final.csv` na pasta `data/raw/`
 
 ### 4. Execute os notebooks na ordem
@@ -192,14 +192,14 @@ python scripts/export_powerbi.py
 
 | # | Visualização | Descrição |
 |---|--------------|-----------|
-| 1 | 🗺️ **Mapa Interativo** | Distribuição de streams por país nas Américas |
-| 2 | 📊 **Top Países** | Ranking dos países com mais streams |
-| 3 | 🎵 **Top Músicas** | Músicas mais ouvidas no continente |
-| 4 | 🎸 **Radar por Região** | Comparação do perfil musical entre sub-regiões |
-| 5 | 📈 **Evolução Temporal** | Tendência de streams ao longo do tempo |
-| 6 | 🔥 **Matriz de Correlação** | Relação entre características e sucesso |
-| 7 | 🎭 **Perfis Musicais** | Distribuição de estilos musicais |
-| 8 | 📊 **Dashboard Integrado** | Visão geral com múltiplos gráficos |
+| 1 | 🗺️ **Mapa interativo** | Distribuição de streams por país nas Américas |
+| 2 | 📊 **Top países** | Ranking dos países com mais streams |
+| 3 | 🎵 **Top músicas** | Músicas mais ouvidas no continente |
+| 4 | 🎸 **Radar por região** | Comparação do perfil musical entre sub-regiões |
+| 5 | 📈 **Evolução temporal** | Tendência de streams ao longo do tempo |
+| 6 | 🔥 **Matriz de correlação** | Relação entre características e sucesso |
+| 7 | 🎭 **Perfis musicais** | Distribuição de estilos musicais |
+| 8 | 📊 **Dashboard integrado** | Visão geral com múltiplos gráficos |
 
 ---
 
