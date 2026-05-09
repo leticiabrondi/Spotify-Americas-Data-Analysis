@@ -1,1 +1,104 @@
+// ==============================================================
+// MEDIDAS DAX PARA DASHBOARD SPOTIFY AMÉRICAS
+// ==============================================================
 
+// 1. MÉTRICAS BÁSICAS
+// ==============================================================
+
+// Total de Streams (Milhões)
+Total Streams = SUM('01_tabela_fato_musicas'[streams_milhoes])
+
+// Média de Streams por Música
+Média Streams = AVERAGE('01_tabela_fato_musicas'[streams_milhoes])
+
+// Total de Músicas
+Total Músicas = DISTINCTCOUNT('01_tabela_fato_musicas'[musica])
+
+// Total de Artistas
+Total Artistas = DISTINCTCOUNT('01_tabela_fato_musicas'[artista])
+
+// Total de Países
+Total Países = DISTINCTCOUNT('01_tabela_fato_musicas'[pais])
+
+// Média de Dançabilidade
+Média Dançabilidade = AVERAGE('01_tabela_fato_musicas'[dancabilidade])
+
+// 2. TOP PERFORMERS
+// ==============================================================
+
+// Top Música
+Top Música = 
+TOPN(1, VALUES('01_tabela_fato_musicas'[musica]), [Total Streams], DESC)
+
+// Top Artista
+Top Artista = 
+TOPN(1, VALUES('01_tabela_fato_musicas'[artista]), [Total Streams], DESC)
+
+// Top País
+Top País = 
+TOPN(1, VALUES('01_tabela_fato_musicas'[pais]), [Total Streams], DESC)
+
+// 3. TENDÊNCIAS
+// ==============================================================
+
+// Crescimento vs Mês Anterior
+Crescimento Mensal = 
+VAR MesAtual = [Total Streams]
+VAR MesAnterior = 
+    CALCULATE([Total Streams], DATEADD('04_serie_temporal_semanal'[week], -1, MONTH))
+RETURN
+    DIVIDE(MesAtual - MesAnterior, MesAnterior, 0)
+
+// Média Móvel (4 semanas)
+Média Móvel 4S = 
+AVERAGEX(
+    DATESINPERIOD('04_serie_temporal_semanal'[week], LASTDATE('04_serie_temporal_semanal'[week]), -4, WEEK),
+    [Total Streams]
+)
+
+// 4. ANÁLISE POR PERFIL
+// ==============================================================
+
+// % Músicas por Perfil
+% Músicas por Perfil = 
+DIVIDE(
+    CALCULATE([Total Músicas], ALLSELECTED('08_perfil_musical'[music_profile])),
+    CALCULATE([Total Músicas], ALL('08_perfil_musical'))
+)
+
+// Streams por Perfil
+Streams por Perfil = 
+SUMMARIZE('08_perfil_musical', '08_perfil_musical'[music_profile], "Streams", [Total Streams])
+
+// 5. RANKINGS DINÂMICOS
+// ==============================================================
+
+// Ranking de Países
+Ranking Países = 
+RANKX(ALL('02_dimensao_paises'[country]), [Total Streams], , DESC)
+
+// Ranking de Músicas (Top N)
+Ranking Músicas Top N = 
+RANKX(ALL('06_top_100_musicas'[musica]), [Total Streams], , DESC)
+
+// 6. FILTROS E SEGMENTAÇÕES
+// ==============================================================
+
+// Filtro por Perfil Musical (Dinâmico)
+Filtro Perfil Musical = 
+IF(
+    ISFILTERED('08_perfil_musical'[music_profile]),
+    "Perfil selecionado: " & SELECTEDVALUE('08_perfil_musical'[music_profile]),
+    "Todos os perfis"
+)
+
+// Faixa de Popularidade
+Faixa Popularidade = 
+SWITCH(
+    TRUE(),
+    [Total Streams] >= 100, "Mega Hit (>100M)",
+    [Total Streams] >= 50, "Super Hit (50-100M)",
+    [Total Streams] >= 10, "Hit (10-50M)",
+    [Total Streams] >= 1, "Sucesso (1-10M)",
+    "Novo (<1M)"
+)
