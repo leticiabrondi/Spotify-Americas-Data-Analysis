@@ -258,7 +258,7 @@ Com base na análise, as principais recomendações para o mercado musical das A
 - 🌐 **Portfólio:** [leticiabrondi.github.io/Portifolio](https://leticiabrondi.github.io/Portifolio/)
 - 💼 **LinkedIn:** [linkedin.com/in/leticiabrondi](https://www.linkedin.com/in/leticiabrondi/)
 - 🐙 **GitHub:** [github.com/leticiabrondi](https://github.com/leticiabrondi)
-- 📧 **Email:** leticia.carvalheiro@outlook.com
+- 📧 **Email:** [leticia.carvalheiro@outlook.com](mailto:leticia.carvalheiro@outlook.com)
 
 ---
 
