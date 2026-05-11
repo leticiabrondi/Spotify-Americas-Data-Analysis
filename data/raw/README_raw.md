@@ -203,6 +203,3 @@ else:
 ---
 
 **Após baixar os dados, prossiga para o notebook `01_ETL_limpeza_americas.ipynb` para iniciar o processamento!** 🚀
-4. ✅ Avisos sobre tamanho e memória
-5. ✅ Código de verificação rápida
-6. ✅ Detalhes sobre não versionamento no GitHub
