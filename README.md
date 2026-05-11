@@ -56,56 +56,81 @@ Este projeto realiza uma análise completa dos dados do **Spotify Weekly Top 200
 spotify-americas-music-analytics/
 │
 ├── README.md                          # Documentação principal
-├── requirements.txt                   # Dependências do projeto
+├── requirements.txt                   # Dependências do projeto (Python + PySpark)
 ├── LICENSE                            # Licença MIT
+├── .gitignore                         # Arquivos ignorados no Git
 │
 ├── data/                              # Dados do projeto
 │   ├── raw/                          # Dados brutos (instruções para download)
-│   │   └── README.md                 
+│   │   └── README.md                 # Instruções para baixar o dataset original
 │   │
-│   ├── processed/                    # Dados processados (CSV)
-│   │   ├── spotify_americas_clean.parquet           # Dados completos
-│   │   ├── spotify_americas_top_musicas.csv     # Top 100 músicas
-│   │   ├── spotify_americas_top_artistas.csv    # Top 50 artistas
-│   │   ├── spotify_americas_analise_paises.csv  # Análise por país
-│   │   └── spotify_americas_series_temporal.csv # Série temporal
+│   ├── processed/                    # Dados processados (ETL)
+│   │   ├── README.md                 # Documentação dos dados processados
+│   │   ├── spotify_americas_clean.parquet     # Dados completos (formato otimizado)
+│   │   ├── spotify_americas_clean.csv         # Dados completos (backup)
+│   │   ├── top_100_musicas_americas.csv       # Top 100 músicas
+│   │   ├── top_50_artistas_americas.csv       # Top 50 artistas
+│   │   ├── analise_por_pais_americas.csv      # Análise por país
+│   │   ├── analise_por_sub_regiao_americas.csv # Análise por sub-região
+│   │   ├── serie_temporal_americas.csv        # Série temporal
+│   │   └── perfil_musical_americas.csv        # Perfil musical
 │   │
-│   └── powerbi/                      # Dados para Power BI
-│       ├── 01_tabela_fato_musicas.csv
-│       ├── 02_dimensao_paises.csv
-│       ├── 03_analise_sub_regioes.csv
-│       └── metadados.json
+│   └── powerbi/                      # Dados otimizados para Power BI
+│       ├── README.md                 # Documentação dos dados do Power BI
+│       ├── 01_tabela_fato_musicas.csv        # Tabela fato (detalhes)
+│       ├── 02_dimensao_paises.csv            # Dimensão país
+│       ├── 03_top_100_musicas.csv            # Top músicas
+│       ├── 04_top_50_artistas.csv            # Top artistas
+│       ├── 05_serie_temporal.csv             # Evolução temporal
+│       ├── 06_perfil_musical.csv             # Perfil musical
+│       ├── 07_analise_sub_regioes.csv        # Análise por sub-região
+│       └── metadados.json                    # Metadados do projeto
 │
 ├── notebooks/                         # Jupyter Notebooks
-│   ├── 01_ETL_limpeza_americas.ipynb           # ETL completo
-│   ├── 02_analise_exploratoria_americas.ipynb  # Análise exploratória
-│   ├── 03_visualizacoes_plotly.ipynb           # Gráficos interativos
-│   └── 04_exportacao_powerbi.ipynb             # Exportação Power BI
+│   ├── 01_ETL_limpeza_americas.ipynb         # ETL completo
+│   ├── 02_analise_exploratoria_americas.ipynb # Análise exploratória
+│   ├── 03_visualizacoes_plotly.ipynb         # Gráficos interativos
+│   └── 04_exportacao_powerbi.ipynb           # Exportação Power BI
 │
-├── pyspark/                          
+├── pyspark/                          # Processamento distribuído (Big Data)
 │   ├── README_pyspark.md             # Documentação PySpark
 │   ├── 01_etl_pyspark.py             # ETL com PySpark
 │   ├── 02_analise_pyspark.py         # Análises com PySpark
 │   ├── 03_agregacoes_pyspark.py      # Agregações otimizadas
 │   └── requirements_pyspark.txt      # Dependências específicas
 │
-├── scripts/                          # Scripts Python
+├── scripts/                          # Scripts Python executáveis
 │   ├── etl_americas.py              # Pipeline de ETL
-│   └── export_powerbi.py            # Exportação para Power BI
+│   ├── export_powerbi.py            # Exportação para Power BI
+│   └── utils.py                     # Funções utilitárias
 │
-├── reports/                          # Relatórios
+├── reports/                          # Relatórios e documentação
 │   ├── insights_americas.md         # Insights detalhados
-│   └── relatorio_americas.pdf       # Relatório completo
+│   ├── relatorio_americas.pdf       # Relatório completo
+│   └── resumo_executivo.txt         # Resumo executivo
 │
-├── images/                           # Imagens do README
+├── images/                           # Imagens para o README
+│   ├── banner_spotify_americas.png  # Banner do projeto
 │   ├── dashboard_preview.png        # Preview do dashboard
 │   ├── mapa_calor_americas.png      # Mapa de calor
-│   └── correlacoes_heatmap.png      # Matriz de correlação
+│   ├── correlacoes_heatmap.png      # Matriz de correlação
+│   └── graficos_principais/         # Pasta com gráficos exportados
+│       ├── top_paises.png
+│       ├── top_musicas.png
+│       ├── evolucao_temporal.png
+│       └── perfil_radar.png
 │
-└── powerbi_dashboard/                # Dashboard Power BI
-    ├── dashboard_spotify_americas.pbix
-    ├── medidas_dax.txt              # Medidas DAX utilizadas
-    └── README_powerbi.md            # Documentação do dashboard
+├── powerbi_dashboard/                # Dashboard Power BI
+│   ├── dashboard_spotify_americas.pbix    # Arquivo principal do dashboard
+│   ├── medidas_dax.txt                   # Medidas DAX utilizadas
+│   ├── README_powerbi.md                 # Documentação do dashboard
+│   └── temas/                            # Temas personalizados
+│       └── tema_spotify.json
+│
+└── docs/                             # Documentação adicional
+    ├── arquitetura.md               # Arquitetura do projeto
+    ├── deploy.md                    # Instruções de deploy
+    └── referencias.md               # Referências e fontes
 ```
 
 ---
