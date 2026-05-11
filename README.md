@@ -80,6 +80,13 @@ spotify-americas-music-analytics/
 │   ├── 03_visualizacoes_plotly.ipynb           # Gráficos interativos
 │   └── 04_exportacao_powerbi.ipynb             # Exportação Power BI
 │
+├── pyspark/                          
+│   ├── README_pyspark.md             # Documentação PySpark
+│   ├── 01_etl_pyspark.py             # ETL com PySpark
+│   ├── 02_analise_pyspark.py         # Análises com PySpark
+│   ├── 03_agregacoes_pyspark.py      # Agregações otimizadas
+│   └── requirements_pyspark.txt      # Dependências específicas
+│
 ├── scripts/                          # Scripts Python
 │   ├── etl_americas.py              # Pipeline de ETL
 │   └── export_powerbi.py            # Exportação para Power BI
