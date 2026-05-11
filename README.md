@@ -1,9 +1,11 @@
 [![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/)
 [![Pandas](https://img.shields.io/badge/Pandas-1.5+-green.svg)](https://pandas.pydata.org/)
+[![PySpark](https://img.shields.io/badge/PySpark-3.3+-red.svg)](https://spark.apache.org/)
 [![Plotly](https://img.shields.io/badge/Plotly-5.10+-orange.svg)](https://plotly.com/)
 [![PowerBI](https://img.shields.io/badge/Power%20BI-Ready-yellow.svg)](https://powerbi.microsoft.com/)
 [![License](https://img.shields.io/badge/License-MIT-red.svg)](LICENSE)
 [![Jupyter](https://img.shields.io/badge/Jupyter-Notebook-orange.svg)](https://jupyter.org/)
+[![Big Data](https://img.shields.io/badge/Big%20Data-Spark%20Ready-blue.svg)](https://spark.apache.org/)
 
 # 🎵 Spotify Américas - Music Analytics
 
@@ -156,6 +158,18 @@ python scripts/export_powerbi.py
 - Abra o arquivo `powerbi_dashboard/dashboard_spotify_americas.pbix`
 - Conecte aos CSVs exportados
 - Explore as visualizações
+
+---
+
+## ❗ Versão PySpark (Big Data)
+
+Este projeto também possui uma **versão processada com PySpark**, demonstrando capacidade de trabalhar com **Big Data** e **processamento distribuído**.
+
+- Processamento de **1.8M+ linhas** em minutos
+- Código otimizado para escalabilidade
+- Window Functions, agregações e correlações
+
+📁 [Ver código PySpark](pyspark/)
 
 ---
 
