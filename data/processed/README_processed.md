@@ -8,7 +8,6 @@ Esta pasta contém os **dados já processados e limpos** do projeto Spotify Amé
 
 | Arquivo | Descrição | Registros | Tamanho |
 |---------|-----------|-----------|---------|
-| `spotify_americas_clean.csv` | Dados completos limpos | ~500k linhas | ~200 MB |
 | `spotify_americas_clean.parquet` | Dados completos (formato otimizado) | ~500k linhas | ~50 MB |
 | `spotify_americas_top_musicas.csv` | Top 100 músicas | 100 | ~10 KB |
 | `spotify_americas_top_artistas.csv` | Top 50 artistas | 50 | ~5 KB |
