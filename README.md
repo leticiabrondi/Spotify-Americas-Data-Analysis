@@ -64,7 +64,7 @@ spotify-americas-music-analytics/
 │   │   └── README.md                 
 │   │
 │   ├── processed/                    # Dados processados (CSV)
-│   │   ├── spotify_americas_clean.csv           # Dados completos
+│   │   ├── spotify_americas_clean.parquet           # Dados completos
 │   │   ├── spotify_americas_top_musicas.csv     # Top 100 músicas
 │   │   ├── spotify_americas_top_artistas.csv    # Top 50 artistas
 │   │   ├── spotify_americas_analise_paises.csv  # Análise por país
