@@ -1,29 +1,56 @@
+# ================================================================
+# SPOTIFY AMÉRICAS - .gitignore
+# ================================================================
+
+# Dados brutos (muito grandes)
+data/raw/*.csv
+data/raw/*.zip
+*.csv
+
 # Python
 __pycache__/
 *.py[cod]
 *.so
 .Python
+*.egg-info/
+dist/
+build/
 
-# Jupyter
+# Jupyter Notebook
 .ipynb_checkpoints/
 *.ipynb
+!notebooks/*.ipynb  # Exceto os notebooks do projeto
 
-# Data (raw data - muito grande)
-data/raw/*.csv
-data/raw/*.parquet
-
-# Environment
-.env
+# Ambiente virtual
 venv/
 env/
+.env
+.venv
 
 # IDE
 .vscode/
 .idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
 
 # OS
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# Logs
-*.log
+# Spark/temporários
+spark-warehouse/
+metastore_db/
+derby.log
+
+# Power BI (versão local)
+*.pbix
+!powerbi_dashboard/*.pbix
+
+# Imagens geradas
+images/graficos_principais/*.png
+!images/*_preview.png
