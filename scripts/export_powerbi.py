@@ -1,79 +1,92 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 # ===================================================================
-# EXPORTAÇÃO DE DADOS PARA POWER BI
+# EXPORTAÇÃO PARA POWER BI - Spotify Américas
+# ===================================================================
+# Objetivo: Exportar dados tratados para dashboard no Power BI
+# Uso: python scripts/export_powerbi.py --input data/processed/spotify_americas_clean.parquet
 # ===================================================================
 
 import pandas as pd
+import numpy as np
 import os
+import json
+import argparse
+import sys
 
-def exportar_para_powerbi(df, output_dir='../data/powerbi/'):
-    """
-    Exporta dados tratados para CSV otimizados para Power BI
+# ===================================================================
+# FUNÇÕES DE EXPORTAÇÃO
+# ===================================================================
+
+def load_data(input_path):
+    """Carrega os dados limpos"""
+    print(f"📂 Carregando dados de: {input_path}")
     
-    Parâmetros:
-    -----------
-    df : DataFrame
-        Dados limpos das Américas
-    output_dir : str
-        Diretório de saída
-    """
+    if input_path.endswith('.parquet'):
+        df = pd.read_parquet(input_path)
+    else:
+        df = pd.read_csv(input_path)
     
-    # Criar diretório se não existir
-    os.makedirs(output_dir, exist_ok=True)
+    print(f"✅ Dados carregados: {len(df):,} registros")
+    return df
+
+
+def export_fact_table(df, output_dir):
+    """Exporta tabela fato (dados completos)"""
+    print("\n📊 Exportando tabela fato...")
     
-    print("📊 Exportando dados para Power BI...")
-    print("="*50)
-    
-    # ==============================================================
-    # 1. DADOS COMPLETOS (Tabela Fato)
-    # ==============================================================
-    print("\n1️⃣ Exportando tabela fato (dados completos)...")
-    
-    # Selecionar colunas relevantes para o dashboard
-    colunas_powerbi = [
+    colunas_fato = [
         'track_name', 'artist_names', 'country', 'sub_region' if 'sub_region' in df.columns else 'region',
         'rank', 'streams_millions', 'week', 'year', 'month', 'month_name',
         'danceability', 'energy', 'valence', 'success_score',
         'music_profile' if 'music_profile' in df.columns else 'rank_group',
-        'popularity_category' if 'popularity_category' in df.columns else None
+        'popularity_category' if 'popularity_category' in df.columns else None,
+        'is_latin_style' if 'is_latin_style' in df.columns else None
     ]
     
     # Filtrar colunas existentes
-    colunas_existentes = [col for col in colunas_powerbi if col in df.columns and col is not None]
-    df_powerbi = df[colunas_existentes].copy()
+    colunas_exist = [c for c in colunas_fato if c is not None and c in df.columns]
+    df_fato = df[colunas_exist].copy()
     
-    # Renomear colunas para português (opcional, facilita Power BI)
+    # Renomear para português
     rename_map = {
         'track_name': 'musica',
         'artist_names': 'artista',
         'country': 'pais',
         'sub_region': 'sub_regiao',
         'streams_millions': 'streams_milhoes',
+        'week': 'data',
         'danceability': 'dancabilidade',
         'success_score': 'score_sucesso',
-        'music_profile': 'perfil_musical'
+        'music_profile': 'perfil_musical',
+        'popularity_category': 'categoria_popularidade',
+        'is_latin_style': 'estilo_latino'
     }
-    df_powerbi = df_powerbi.rename(columns={k: v for k, v in rename_map.items() if k in df_powerbi.columns})
+    
+    df_fato = df_fato.rename(columns={k: v for k, v in rename_map.items() if k in df_fato.columns})
     
     # Salvar
-    df_powerbi.to_csv(f'{output_dir}01_tabela_fato_musicas.csv', index=False)
-    print(f"   ✅ 01_tabela_fato_musicas.csv - {len(df_powerbi):,} registros")
+    output_path = f"{output_dir}/01_tabela_fato_musicas.csv"
+    df_fato.to_csv(output_path, index=False)
+    print(f"   ✅ {output_path} - {len(df_fato):,} registros")
     
-    # ==============================================================
-    # 2. DADOS AGREGDOS POR PAÍS (Tabela Dimensão País)
-    # ==============================================================
-    print("\n2️⃣ Exportando tabela dimensão país...")
+    return df_fato
+
+
+def export_country_dimension(df, output_dir):
+    """Exporta dimensão país"""
+    print("\n📊 Exportando dimensão país...")
     
     pais_agg = df.groupby('country').agg({
         'streams_millions': ['sum', 'mean', 'std'],
         'danceability': 'mean',
-        'energy': 'mean', 
+        'energy': 'mean',
         'valence': 'mean',
         'rank': 'mean',
         'track_name': 'count',
         'artist_names': 'nunique'
     }).round(3)
     
-    # Achatar colunas MultiIndex
     pais_agg.columns = ['total_streams_m', 'media_streams_m', 'std_streams_m',
                         'media_dancabilidade', 'media_energia', 'media_valence',
                         'rank_medio', 'total_musicas', 'total_artistas']
@@ -81,112 +94,154 @@ def exportar_para_powerbi(df, output_dir='../data/powerbi/'):
     
     # Adicionar sub-região
     if 'sub_region' in df.columns:
-        sub_regiao_map = df.groupby('country')['sub_region'].first()
-        pais_agg['sub_regiao'] = pais_agg['country'].map(sub_regiao_map)
+        sub_map = df.groupby('country')['sub_region'].first()
+        pais_agg['sub_regiao'] = pais_agg['country'].map(sub_map)
     
-    pais_agg.to_csv(f'{output_dir}02_dimensao_paises.csv', index=False)
-    print(f"   ✅ 02_dimensao_paises.csv - {len(pais_agg)} países")
+    output_path = f"{output_dir}/02_dimensao_paises.csv"
+    pais_agg.to_csv(output_path, index=False)
+    print(f"   ✅ {output_path} - {len(pais_agg)} países")
     
-    # ==============================================================
-    # 3. DADOS AGREGDOS POR SUB-REGIÃO
-    # ==============================================================
-    if 'sub_region' in df.columns:
-        print("\n3️⃣ Exportando análise por sub-região...")
+    return pais_agg
+
+
+def export_top_musics(df, output_dir, top_n=100):
+    """Exporta top músicas"""
+    print(f"\n📊 Exportando top {top_n} músicas...")
+    
+    top_musicas = (df.groupby(['track_name', 'artist_names'])
+                   .agg({
+                       'streams_millions': 'sum',
+                       'rank': 'min',
+                       'country': 'nunique'
+                   })
+                   .rename(columns={'country': 'paises_alcancados'})
+                   .sort_values('streams_millions', ascending=False)
+                   .head(top_n)
+                   .reset_index())
+    
+    output_path = f"{output_dir}/03_top_{top_n}_musicas.csv"
+    top_musicas.to_csv(output_path, index=False)
+    print(f"   ✅ {output_path}")
+    
+    return top_musicas
+
+
+def export_top_artists(df, output_dir, top_n=50):
+    """Exporta top artistas"""
+    print(f"\n📊 Exportando top {top_n} artistas...")
+    
+    top_artistas = (df.groupby('artist_names')
+                    .agg({
+                        'streams_millions': 'sum',
+                        'track_name': 'nunique',
+                        'country': 'nunique'
+                    })
+                    .rename(columns={'track_name': 'musicas_distintas', 'country': 'paises_alcancados'})
+                    .sort_values('streams_millions', ascending=False)
+                    .head(top_n)
+                    .reset_index())
+    
+    output_path = f"{output_dir}/04_top_{top_n}_artistas.csv"
+    top_artistas.to_csv(output_path, index=False)
+    print(f"   ✅ {output_path}")
+    
+    return top_artistas
+
+
+def export_time_series(df, output_dir):
+    """Exporta série temporal"""
+    print("\n📊 Exportando série temporal...")
+    
+    # Por semana
+    temporal_semanal = df.groupby(['week', 'year', 'month']).agg({
+        'streams_millions': 'sum',
+        'rank': 'mean'
+    }).reset_index()
+    
+    output_path = f"{output_dir}/05_serie_temporal.csv"
+    temporal_semanal.to_csv(output_path, index=False)
+    print(f"   ✅ {output_path} - {len(temporal_semanal)} semanas")
+    
+    return temporal_semanal
+
+
+def export_music_profile(df, output_dir):
+    """Exporta análise de perfil musical"""
+    print("\n📊 Exportando análise de perfil musical...")
+    
+    if 'music_profile' in df.columns:
+        perfil_agg = df.groupby('music_profile').agg({
+            'streams_millions': ['sum', 'mean'],
+            'track_name': 'count'
+        }).round(2)
         
+        perfil_agg.columns = ['total_streams_m', 'media_streams_m', 'total_musicas']
+        perfil_agg = perfil_agg.reset_index()
+        perfil_agg.columns = ['perfil_musical', 'total_streams_m', 'media_streams_m', 'total_musicas']
+        
+        output_path = f"{output_dir}/06_perfil_musical.csv"
+        perfil_agg.to_csv(output_path, index=False)
+        print(f"   ✅ {output_path}")
+        
+        return perfil_agg
+    else:
+        print("   ⚠️ Coluna 'music_profile' não encontrada")
+        return None
+
+
+def export_subregion_analysis(df, output_dir):
+    """Exporta análise por sub-região"""
+    print("\n📊 Exportando análise por sub-região...")
+    
+    if 'sub_region' in df.columns:
         regiao_agg = df.groupby('sub_region').agg({
             'streams_millions': 'sum',
             'danceability': 'mean',
             'energy': 'mean',
             'valence': 'mean',
             'country': 'nunique',
-            'artist_names': 'nunique',
-            'track_name': 'count'
-        }).round(3)
+            'track_name': 'count',
+            'artist_names': 'nunique'
+        }).round(3).reset_index()
         
-        regiao_agg.columns = ['total_streams_m', 'media_dancabilidade', 'media_energia', 
-                              'media_valence', 'total_paises', 'total_artistas', 'total_musicas']
-        regiao_agg = regiao_agg.reset_index()
+        regiao_agg.columns = ['sub_regiao', 'total_streams_m', 'media_dancabilidade', 
+                              'media_energia', 'media_valence', 'total_paises', 
+                              'total_musicas', 'total_artistas']
         
-        regiao_agg.to_csv(f'{output_dir}03_analise_sub_regioes.csv', index=False)
-        print(f"   ✅ 03_analise_sub_regioes.csv - {len(regiao_agg)} regiões")
-    
-    # ==============================================================
-    # 4. SÉRIE TEMPORAL (para gráficos de evolução)
-    # ==============================================================
-    print("\n4️⃣ Exportando série temporal...")
-    
-    # Por semana
-    temporal_semanal = df.groupby(['week']).agg({
-        'streams_millions': 'sum',
-        'rank': 'mean'
-    }).reset_index()
-    temporal_semanal.to_csv(f'{output_dir}04_serie_temporal_semanal.csv', index=False)
-    print(f"   ✅ 04_serie_temporal_semanal.csv - {len(temporal_semanal)} semanas")
-    
-    # Por mês
-    temporal_mensal = df.groupby(['year', 'month', 'month_name']).agg({
-        'streams_millions': 'sum'
-    }).reset_index()
-    temporal_mensal.to_csv(f'{output_dir}05_serie_temporal_mensal.csv', index=False)
-    print(f"   ✅ 05_serie_temporal_mensal.csv - {len(temporal_mensal)} meses")
-    
-    # ==============================================================
-    # 5. TOP MÚSICAS E TOP ARTISTAS
-    # ==============================================================
-    print("\n5️⃣ Exportando top performers...")
-    
-    # Top 100 músicas
-    top_musicas = (df.groupby(['track_name', 'artist_names'])['streams_millions']
-                   .sum()
-                   .sort_values(ascending=False)
-                   .head(100)
-                   .reset_index())
-    top_musicas.columns = ['musica', 'artista', 'streams_milhoes']
-    top_musicas.to_csv(f'{output_dir}06_top_100_musicas.csv', index=False)
-    print(f"   ✅ 06_top_100_musicas.csv")
-    
-    # Top 50 artistas
-    top_artistas = (df.groupby('artist_names')['streams_millions']
-                    .sum()
-                    .sort_values(ascending=False)
-                    .head(50)
-                    .reset_index())
-    top_artistas.columns = ['artista', 'streams_milhoes']
-    top_artistas.to_csv(f'{output_dir}07_top_50_artistas.csv', index=False)
-    print(f"   ✅ 07_top_50_artistas.csv")
-    
-    # ==============================================================
-    # 6. PERFIL MUSICAL (para dashboard)
-    # ==============================================================
-    if 'music_profile' in df.columns:
-        print("\n6️⃣ Exportando análise de perfil musical...")
+        output_path = f"{output_dir}/07_analise_sub_regioes.csv"
+        regiao_agg.to_csv(output_path, index=False)
+        print(f"   ✅ {output_path}")
         
-        perfil_agg = df.groupby('music_profile').agg({
-            'streams_millions': ['sum', 'mean'],
-            'track_name': 'count'
-        }).round(2)
-        perfil_agg.columns = ['total_streams_m', 'media_streams_m', 'total_musicas']
-        perfil_agg = perfil_agg.reset_index()
-        perfil_agg.to_csv(f'{output_dir}08_perfil_musical.csv', index=False)
-        print(f"   ✅ 08_perfil_musical.csv")
+        return regiao_agg
+    else:
+        print("   ⚠️ Coluna 'sub_region' não encontrada")
+        return None
+
+
+def export_correlation_matrix(df, output_dir):
+    """Exporta matriz de correlação"""
+    print("\n📊 Exportando matriz de correlação...")
     
-    # ==============================================================
-    # 7. MATRIZ DE CORRELAÇÃO (para Power BI)
-    # ==============================================================
-    print("\n7️⃣ Exportando matriz de correlação...")
+    colunas_corr = ['rank', 'streams_millions', 'danceability', 'energy', 'valence']
+    colunas_exist = [c for c in colunas_corr if c in df.columns]
     
-    corr_cols = ['streams_millions', 'danceability', 'energy', 'valence', 'rank']
-    corr_cols_exist = [c for c in corr_cols if c in df.columns]
-    corr_matrix = df[corr_cols_exist].corr().round(3)
-    corr_matrix.to_csv(f'{output_dir}09_matriz_correlacao.csv')
-    print(f"   ✅ 09_matriz_correlacao.csv")
+    if len(colunas_exist) >= 2:
+        corr_matrix = df[colunas_exist].corr().round(3)
+        
+        output_path = f"{output_dir}/08_matriz_correlacao.csv"
+        corr_matrix.to_csv(output_path)
+        print(f"   ✅ {output_path}")
+        
+        return corr_matrix
+    else:
+        print("   ⚠️ Colunas insuficientes para correlação")
+        return None
+
+
+def export_metadata(df, output_dir, files_exported):
+    """Exporta metadados em JSON"""
+    print("\n📊 Exportando metadados...")
     
-    # ==============================================================
-    # 8. METADADOS (para documentação no Power BI)
-    # ==============================================================
-    print("\n8️⃣ Exportando metadados...")
-    
-    import json
     metadados = {
         'projeto': 'Spotify Weekly Top 200 - Análise das Américas',
         'data_exportacao': pd.Timestamp.now().isoformat(),
@@ -197,33 +252,117 @@ def exportar_para_powerbi(df, output_dir='../data/powerbi/'):
         'periodo_inicio': df['week'].min().isoformat(),
         'periodo_fim': df['week'].max().isoformat(),
         'total_streams_milhoes': float(df['streams_millions'].sum()),
-        'arquivos_exportados': [
-            '01_tabela_fato_musicas.csv',
-            '02_dimensao_paises.csv',
-            '03_analise_sub_regioes.csv',
-            '04_serie_temporal_semanal.csv',
-            '05_serie_temporal_mensal.csv',
-            '06_top_100_musicas.csv',
-            '07_top_50_artistas.csv',
-            '08_perfil_musical.csv',
-            '09_matriz_correlacao.csv'
-        ]
+        'media_dancabilidade': float(df['danceability'].mean()),
+        'media_energia': float(df['energy'].mean()),
+        'media_valence': float(df['valence'].mean()),
+        'arquivos_exportados': files_exported
     }
     
-    with open(f'{output_dir}metadados.json', 'w') as f:
-        json.dump(metadados, f, indent=2)
+    output_path = f"{output_dir}/metadados.json"
+    with open(output_path, 'w', encoding='utf-8') as f:
+        json.dump(metadados, f, indent=2, ensure_ascii=False)
     
-    print(f"   ✅ metadados.json")
+    print(f"   ✅ {output_path}")
     
-    print("\n" + "="*50)
-    print("✅ EXPORTAÇÃO PARA POWER BI CONCLUÍDA!")
-    print(f"📁 Arquivos salvos em: {output_dir}")
-    print("="*50)
+    return metadados
+
+# ===================================================================
+# PIPELINE PRINCIPAL
+# ===================================================================
+
+def export_to_powerbi(input_path, output_dir='data/powerbi'):
+    """
+    Exporta todos os dados necessários para o Power BI
+    
+    Parâmetros:
+    -----------
+    input_path : str
+        Caminho do arquivo de dados limpos
+    output_dir : str
+        Diretório de saída para os arquivos do Power BI
+    """
+    
+    print("=" * 70)
+    print("📊 EXPORTAÇÃO PARA POWER BI - SPOTIFY AMÉRICAS")
+    print("=" * 70)
+    
+    # Criar diretório de saída
+    os.makedirs(output_dir, exist_ok=True)
+    print(f"\n📁 Diretório de saída: {output_dir}")
+    
+    # Carregar dados
+    df = load_data(input_path)
+    
+    # Exportar todos os arquivos
+    files_exported = []
+    
+    # 1. Tabela fato
+    export_fact_table(df, output_dir)
+    files_exported.append('01_tabela_fato_musicas.csv')
+    
+    # 2. Dimensão país
+    export_country_dimension(df, output_dir)
+    files_exported.append('02_dimensao_paises.csv')
+    
+    # 3. Top músicas
+    export_top_musics(df, output_dir)
+    files_exported.append('03_top_100_musicas.csv')
+    
+    # 4. Top artistas
+    export_top_artists(df, output_dir)
+    files_exported.append('04_top_50_artistas.csv')
+    
+    # 5. Série temporal
+    export_time_series(df, output_dir)
+    files_exported.append('05_serie_temporal.csv')
+    
+    # 6. Perfil musical
+    export_music_profile(df, output_dir)
+    files_exported.append('06_perfil_musical.csv')
+    
+    # 7. Análise sub-região
+    export_subregion_analysis(df, output_dir)
+    files_exported.append('07_analise_sub_regioes.csv')
+    
+    # 8. Matriz correlação
+    export_correlation_matrix(df, output_dir)
+    files_exported.append('08_matriz_correlacao.csv')
+    
+    # 9. Metadados
+    export_metadata(df, output_dir, files_exported)
+    files_exported.append('metadados.json')
+    
+    # Resumo final
+    print("\n" + "=" * 70)
+    print("✅ EXPORTAÇÃO CONCLUÍDA!")
+    print("=" * 70)
+    print(f"\n📁 Arquivos salvos em: {output_dir}")
+    print(f"\n📋 Arquivos gerados ({len(files_exported)}):")
+    for f in files_exported:
+        print(f"   • {f}")
     
     return True
 
-# Executar exportação
+
+# ===================================================================
+# MAIN
+# ===================================================================
+
 if __name__ == "__main__":
-    # Carregar dados limpos
-    df = pd.read_parquet('/content/drive/MyDrive/spotify_americas_clean.parquet')
-    exportar_para_powerbi(df)
+    parser = argparse.ArgumentParser(description='Exportar dados para Power BI')
+    parser.add_argument('--input', type=str, 
+                        default='data/processed/spotify_americas_clean.parquet',
+                        help='Caminho do arquivo de dados limpos')
+    parser.add_argument('--output', type=str, default='data/powerbi',
+                        help='Diretório de saída para os arquivos do Power BI')
+    
+    args = parser.parse_args()
+    
+    # Executar exportação
+    success = export_to_powerbi(args.input, args.output)
+    
+    if success:
+        print("\n🎉 Pronto para importar no Power BI!")
+    else:
+        print("\n❌ Falha na exportação!")
+        sys.exit(1)
