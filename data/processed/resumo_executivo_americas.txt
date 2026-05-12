@@ -1,0 +1,28 @@
+============================================================
+RESUMO EXECUTIVO - ANÁLISE SPOTIFY AMÉRICAS
+============================================================
+
+📊 DADOS GERAIS:
+   • Total de registros: 245,338
+   • Países analisados: 17
+   • Músicas únicas: 5,479
+   • Artistas únicos: 3,481
+   • Período: 2021-02-04 a 2022-07-14
+
+💰 STREAMS:
+   • Total: 106547.0 milhões
+   • Média por música: 0.43M
+
+🎵 CARACTERÍSTICAS MUSICAIS:
+   • Dançabilidade: 0.715
+   • Energia: 0.667
+   • Positividade: 0.608
+
+🎭 PERFIL MUSICAL DOMINANTE:
+   • 🔥 Ritmo Latino (Dançante/Energético): 28.4%
+
+🗺️ DISTRIBUIÇÃO POR SUB-REGIÃO:
+   • 🗺️ América do Sul: 57.0%
+   • 🌏 América Central: 18.6%
+   • 🌎 América do Norte: 18.2%
+   • 🏝️ Caribe: 6.2%

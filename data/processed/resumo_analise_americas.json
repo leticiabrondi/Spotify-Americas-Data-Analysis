@@ -1,0 +1,22 @@
+{
+  "projeto": "Spotify Weekly Top 200 - Análise das Américas",
+  "data_analise": "2026-05-09T15:49:50.477868",
+  "total_streams_millions": 106546.97000000003,
+  "total_streams_bilhoes": 106.54697000000003,
+  "total_musicas_unicas": 5479,
+  "total_artistas_unicos": 3481,
+  "total_paises": 17,
+  "periodo_inicio": "2021-02-04T00:00:00",
+  "periodo_fim": "2022-07-14T00:00:00",
+  "media_danceability": 0.7150619223275645,
+  "media_energy": 0.666937422657721,
+  "media_valence": 0.6082922682177242,
+  "media_streams_por_musica": 0.4342864537902813,
+  "top_musica": "DÁKITI",
+  "top_artista": "Bad Bunny",
+  "top_pais": "United States",
+  "perfil_dominante": "🔥 Ritmo Latino (Dançante/Energético)",
+  "media_success_score": 33.13919297823961,
+  "correlacao_rank_streams": -0.2629795749410516,
+  "correlacao_dance_streams": -0.0880074694545015
+}

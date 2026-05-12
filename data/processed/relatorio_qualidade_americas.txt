@@ -1,0 +1,9 @@
+RELATÓRIO DE QUALIDADE DOS DADOS - AMÉRICAS
+==================================================
+
+✅ Nenhum valor nulo encontrado!
+
+📊 OUTLIERS EM STREAMS:
+   • Q1: 0.03M
+   • Q3: 0.41M
+   • Outliers detectados: 34046 (13.88%)

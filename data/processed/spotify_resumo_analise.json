@@ -1,0 +1,14 @@
+{
+  "total_streams_bilhoes": 15.293020000000002,
+  "total_musicas_unicas": 4043,
+  "total_artistas_unicos": 2593,
+  "total_paises": 5,
+  "periodo_inicio": "2021-02-04T00:00:00",
+  "periodo_fim": "2022-07-14T00:00:00",
+  "media_danceability": 0.6822756572154713,
+  "media_energy": 0.6569112223016441,
+  "media_valence": 0.5441116448256692,
+  "top_musica": "Heat Waves",
+  "top_pais": "Argentina",
+  "perfil_dominante": "\ud83d\udc83 Dan\u00e7ante"
+}

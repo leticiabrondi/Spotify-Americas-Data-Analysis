@@ -1,0 +1,7 @@
+,streams_millions,streams_millions,streams_millions,danceability,energy,valence,is_latin_style
+,sum,mean,count,mean,mean,mean,mean
+sub_region,,,,,,,
+🌎 América do Norte,57399.61,1.285,44676,0.679,0.624,0.534,0.229
+🌏 América Central,2341.17,0.051,45594,0.718,0.657,0.612,0.388
+🏝️ Caribe,476.87,0.031,15198,0.741,0.685,0.595,0.454
+🗺️ América do Sul,46329.32,0.331,139870,0.723,0.682,0.632,0.428

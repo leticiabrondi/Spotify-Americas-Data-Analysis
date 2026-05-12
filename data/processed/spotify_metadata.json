@@ -1,0 +1,34 @@
+{
+  "shape": [
+    15123,
+    21
+  ],
+  "columns": [
+    "rank",
+    "artist_names",
+    "track_name",
+    "release_date",
+    "streams",
+    "week",
+    "danceability",
+    "energy",
+    "valence",
+    "country",
+    "region",
+    "language",
+    "streams_millions",
+    "year",
+    "month",
+    "day_of_week",
+    "week_number",
+    "success_score",
+    "music_profile",
+    "season",
+    "rank_group"
+  ],
+  "period_start": "2021-02-04T00:00:00",
+  "period_end": "2022-07-14T00:00:00",
+  "total_streams": 23430052191.0,
+  "unique_countries": 1,
+  "unique_tracks": 1094
+}
